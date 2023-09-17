@@ -25,4 +25,8 @@ After completing, run the script
 
 ```python3 octoprint.py```
 
+Cronjob example - Sundays @ 12:05pm
+
+```5 12 * * 0 python3 /opt/scripts/octoprint.py```
+
 
