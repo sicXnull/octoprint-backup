@@ -1,7 +1,7 @@
 
 # Octoprint Backup
 
-SSH into Octoprint Machine, creates backup & sends to local directory of your choosing
+SSH into Octoprint Machine, creates backup & sends to local directory of your choosing. Easy to run via cronjob weekly/monthly/etc
 
 
 
