@@ -9,6 +9,7 @@ private_key_path = "/path/to/your/private/key"
 remote_backup_command = "/home/pi/oprint/bin/octoprint plugins backup:backup"
 remote_backup_dir = "/root/.octoprint/data/backup/"
 local_destination_dir = "/path/to/local/destination/dir/"
+backup_limit = 7  # maximum number of backups to keep
 
 # Initialize SSH client
 ssh_client = paramiko.SSHClient()
@@ -24,7 +25,7 @@ try:
 
     # Execute the backup command
     stdin, stdout, stderr = ssh_client.exec_command(remote_backup_command)
-    
+
     # Wait for the backup to complete
     stdout.channel.recv_exit_status()
 
@@ -44,6 +45,22 @@ try:
     scp.close()
 
     print(f"Backup file downloaded to: {local_destination_path}")
+
+    # List local backup files
+    local_backup_files = glob.glob(os.path.join(local_destination_dir, "octoprint-backup-*.zip"))
+
+    # Check if the number of local backup files exceeds the limit
+    if len(local_backup_files) > backup_limit:
+        # Sort local backup files by modification time (oldest first)
+        local_backup_files.sort(key=os.path.getmtime)
+
+        # Calculate the number of files to remove to maintain the limit
+        files_to_remove = len(local_backup_files) - backup_limit
+
+        # Remove the oldest backup files
+        for i in range(files_to_remove):
+            os.remove(local_backup_files[i])
+            print(f"Removed old backup file: {local_backup_files[i]}")
 
 except Exception as e:
     print(f"An error occurred: {str(e)}")
